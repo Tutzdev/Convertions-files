@@ -26,15 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # Anonymous pulls from Docker Hub are rate limited on shared runners; retry before failing.
+      # Anonymous Docker Hub pulls are rate limited on shared runners, so the base images come from
+      # the Docker official images mirror on Amazon ECR Public.
       - name: Build image
-        run: |
-          for attempt in 1 2 3; do
-            docker build -t boostconvert-mini . && exit 0
-            echo "Build attempt $attempt failed, retrying in 30s"
-            sleep 30
-          done
-          exit 1
+        run: docker build --build-arg BASE_REGISTRY=public.ecr.aws/docker/library -t boostconvert-mini .
 
       # Proves the packaged jar finds the WebP reader (ImageIO plugins inside a fat jar) and that the
       # whole upload, poll and download flow works in the container.
