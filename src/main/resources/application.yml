@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: boostconvert-mini
+  threads:
+    virtual:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  tomcat:
+    # Read the rest of an oversized upload so the client receives the 413 instead of a reset connection.
+    max-swallow-size: 25MB
+
+boostconvert:
+  jobs:
+    workers: ${BOOSTCONVERT_WORKERS:2}
+    queue-capacity: ${BOOSTCONVERT_QUEUE_CAPACITY:20}
+    retention: ${BOOSTCONVERT_RETENTION:30m}
+    retry-after: 5s
+    cleanup-interval: PT1M
+    storage-dir: ${BOOSTCONVERT_STORAGE_DIR:${java.io.tmpdir}/boostconvert}
+  limits:
+    max-image-pixels: 50000000
+    max-pdf-pages: 300
+    max-rendered-pages: 30
+    render-dpi: 144
+    max-cells: 1000000
+    jpeg-quality: 0.9
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
